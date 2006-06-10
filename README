@@ -1,0 +1,37 @@
+
+Overview
+========
+
+IFrameFactory helps addons to create and re-use frames. It creates the frames
+when needed and keeps a list of unused frames. Each client that wants to use
+IFrameFactory needs to register an interface under the addon name and a frame
+class name. This interface needs to have a :Create() and a :Destroy() function,
+these are used to create and destroy the frames. Destroy is maybe a bit
+misleading as the frames can't be destroyed, the client just should clean up
+the frame so it can be stored in a list for later re-use.
+
+
+Public API
+==========
+
+
+IFrameFactory:Register(addon, class, iface)
+
+Registers a interface 'iface' under the adodn name 'addon' and frame class name
+'class'.
+
+
+
+frame = IFrameFactory:Create(addon, class)
+
+Creates a new frame using the :Create() function from the interface or takes a
+frame from the unused list and returns it. If a new frame needs to be created,
+it generates a name and calls iface:Create(name) and expects to get a new frame
+object.
+
+
+
+IFrameFactory:Destroy(addon, class, frame)
+
+Passes 'frame' to the iface:Destroy() function and expects to get a clean
+frame. Then the clean frame is saved in a list to be re-used later.

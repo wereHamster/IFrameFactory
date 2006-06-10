@@ -1,0 +1,5 @@
+## Interface: 11000
+## Title: IFrameFactory
+## Author: Shag
+
+Lib\IFrameFactory.lua
