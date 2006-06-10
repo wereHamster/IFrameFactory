@@ -3,7 +3,7 @@
 	Embedded Library Stub
 ]]
 
-local libName, libMajor, libMinor = "IFrameFactory", "1.0", tonumber(string.sub("$Revision: 1 $", 12, -3))
+local libName, libMajor, libMinor = "IFrameFactory", "1.0", tonumber(string.sub("$Revision$", 12, -3))
 
 local libMetatable = {
 	__call = function(stub, major, minor)
