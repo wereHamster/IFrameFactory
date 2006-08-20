@@ -34,11 +34,10 @@ end
 	The AddOn
 ]]
 
+lib.Registry = lib.Registry or { }
+
 function lib:Register(addon, class, iface)
-	if (self.Registry == nil) then
-		self.Registry = { }
-		self.Registry[addon] = { }
-	elseif (self.Registry[addon] == nil) then
+	if (self.Registry[addon] == nil) then
 		self.Registry[addon] = { }
 	end
 	
@@ -78,3 +77,14 @@ function lib:Destroy(addon, class, frame)
 	
 	table.insert(Info.List, frame)
 end
+
+function lib:Clear(addon, class)
+	local Info = self.Registry[addon][class]
+	
+	local frame = next(Info.List)
+	while (frame) do
+		lib:Destroy(adon, class, frame)
+		frame = next(Info.List)
+	end
+end
+
