@@ -80,11 +80,13 @@ end
 
 function lib:Clear(addon, class)
 	local Info = self.Registry[addon][class]
+	local regexp = "^IFrameFactory__"..addon..class.."__.....__$"
 	
-	local frame = next(Info.List)
-	while (frame) do
-		lib:Destroy(adon, class, frame)
-		frame = next(Info.List)
+	Info.List = { }
+	for key,value in pairs(getfenv(0)) do
+		if (string.find(key, regexp)) then
+			lib:Destroy(addon, class, value)
+		end
 	end
 end
 
