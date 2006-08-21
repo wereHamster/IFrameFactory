@@ -21,7 +21,6 @@ Registers a interface 'iface' under the adodn name 'addon' and frame class name
 'class'.
 
 
-
 frame = IFrameFactory:Create(addon, class)
 
 Creates a new frame using the :Create() function from the interface or takes a
@@ -30,8 +29,13 @@ it generates a name and calls iface:Create(name) and expects to get a new frame
 object.
 
 
-
 IFrameFactory:Destroy(addon, class, frame)
 
 Passes 'frame' to the iface:Destroy() function and expects to get a clean
 frame. Then the clean frame is saved in a list to be re-used later.
+
+
+IFrameFactory:Clear(addon, class,)
+
+Destroys all frames of the given addon/class. So you don't have to track which
+frames you've created, just call this function and :Create() your frames.
