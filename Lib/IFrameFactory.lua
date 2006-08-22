@@ -44,7 +44,7 @@ function lib:Register(addon, class, iface)
 	local Info = {
 		Interface = iface,
 		Count = 0,
-		List = { },
+		Objects = { { }, { } },
 	}
 	self.Registry[addon][class] = Info
 end
@@ -52,7 +52,7 @@ end
 function lib:Create(addon, class)
 	local Info = self.Registry[addon][class]
 	
-	local frame = table.remove(Info.List)
+	local frame = table.remove(Info.Objects[1])
 	if (frame == nil) then
 		local name = string.format("IFrameFactory__"..addon..class.."__%05d__", Info.Count)
 		Info.Count = Info.Count + 1
@@ -62,6 +62,8 @@ function lib:Create(addon, class)
 	
 	frame:SetParent(UIParent)
 	frame:Show()
+	
+	Info.Objects[2][frame] = frame
 	
 	return frame
 end
@@ -75,18 +77,16 @@ function lib:Destroy(addon, class, frame)
 	frame:SetParent(UIParent)
 	frame:Hide()
 	
-	table.insert(Info.List, frame)
+	Info.Objects[2][frame] = nil
+	
+	table.insert(Info.Objects[1], frame)
 end
 
 function lib:Clear(addon, class)
 	local Info = self.Registry[addon][class]
-	local regexp = "^IFrameFactory__"..addon..class.."__.....__$"
 	
-	Info.List = { }
-	for key,value in pairs(getfenv(0)) do
-		if (string.find(key, regexp)) then
-			lib:Destroy(addon, class, value)
-		end
+	for key,value in pairs(Info.Objects[2]) do
+		lib:Destroy(addon, class, value)
 	end
 end
 
