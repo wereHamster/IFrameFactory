@@ -1,5 +1,5 @@
 ## Interface: 11200
 ## Title: IFrameFactory
-## Author: Shag
+## Author: wereHamster
 
 Lib\IFrameFactory.lua
