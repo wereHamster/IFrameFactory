@@ -4,31 +4,18 @@
 ]]
 
 local libName, libMajor, libMinor = "IFrameFactory", "1.0", tonumber(string.sub("$Revision$", 12, -3))
-
-local libMetatable = {
-	__call = function(stub, major, minor)
-		if (minor) then
-			stub[major] = { }
-			stub[major].libVersion = minor
-		end
-		return stub[major]
-	end,
-}
+local libMetatable = { __call = function(self, major) self[major] = self[major] or { }; return self[major] end }
 
 if (getglobal(libName) == nil) then
 	setglobal(libName, setmetatable({ }, libMetatable))
 end
 
-local stub = getglobal(libName)
-
-local lib = stub(libMajor)
-if (lib == nil) then
-	lib = stub(libMajor, libMinor)
-elseif (lib.libVersion >= libMinor) then
+local lib = getglobal(libName)(libMajor)
+if (lib.libVersion and lib.libVersion >= libMinor) then
 	return
-else
-	lib.libVersion = libMinor
 end
+
+lib.libVersion = libMinor
 
 --[[
 	The AddOn
@@ -36,57 +23,38 @@ end
 
 lib.Registry = lib.Registry or { }
 
-function lib:Register(addon, class, iface)
-	if (self.Registry[addon] == nil) then
-		self.Registry[addon] = { }
-	end
-	
-	local Info = {
-		Interface = iface,
-		Count = 0,
-		Objects = { { }, { } },
-	}
-	self.Registry[addon][class] = Info
+function lib:Register(group, name, iface)
+	self.Registry[group] = self.Registry[group] or { }
+	self.Registry[group][name] = { Interface = iface, Objects = { { }, { } } }
 end
 
-function lib:Create(addon, class)
-	local Info = self.Registry[addon][class]
-	
-	local frame = table.remove(Info.Objects[1])
-	if (frame == nil) then
-		local name = string.format("IFrameFactory__"..addon..class.."__%05d__", Info.Count)
-		Info.Count = Info.Count + 1
-		frame = Info.Interface:Create(name)
-		frame:ClearAllPoints()
-	end
-	
-	frame:SetParent(UIParent)
-	frame:Show()
-	
+function lib:Create(group, name)
+	local Info = self.Registry[group][name]
+	local frame = table.remove(Info.Objects[1]) or Info.Interface:Create()
+
 	Info.Objects[2][frame] = frame
-	
+
+	frame:ClearAllPoints()
+	frame:Show()
+
 	return frame
 end
 
-function lib:Destroy(addon, class, frame)
-	local Info = self.Registry[addon][class]
-	
+function lib:Destroy(group, name, frame)
+	local Info = self.Registry[group][name]
 	frame = Info.Interface:Destroy(frame)
-	
-	frame:ClearAllPoints()
-	frame:SetParent(UIParent)
-	frame:Hide()
-	
+
 	Info.Objects[2][frame] = nil
-	
 	table.insert(Info.Objects[1], frame)
+
+	frame:Hide()
 end
 
-function lib:Clear(addon, class)
-	local Info = self.Registry[addon][class]
-	
-	for key,value in pairs(Info.Objects[2]) do
-		lib:Destroy(addon, class, value)
+function lib:Clear(group, name)
+	local Info = self.Registry[group][name]
+
+	for _, frame in pairs(Info.Objects[2]) do
+		lib:Destroy(group, name, frame)
 	end
 end
 
