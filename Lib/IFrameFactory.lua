@@ -3,8 +3,9 @@
 	Embedded Library Stub
 ]]
 
-local libName, libMajor, libMinor = "IFrameFactory", "1.0", tonumber(string.sub("$Revision$", 12, -3))
-local libMetatable = { __call = function(self, major) self[major] = self[major] or { }; return self[major] end }
+local libName, libMajor, libMinor, libMetatable = "IFrameFactory", "1.0", 0, {
+  __call = function(self, major) self[major] = self[major] or { }; return self[major] end
+}
 
 if (getglobal(libName) == nil) then
 	setglobal(libName, setmetatable({ }, libMetatable))

@@ -1,4 +1,4 @@
-## Interface: 20003
+## Interface: 40000
 ## Title: IFrameFactory
 ## Author: wereHamster
 
